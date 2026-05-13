@@ -12,31 +12,16 @@ Z_ORD = 'Z'.ord
 
 def caesar_cipher(str, shift)
   
-  result = str.split('').map do |item|
+  str.split('').map do |item|
     item = item.ord
     if item >= A_LOWERCASE_ORD && item <= Z_LOWERCASE_ORD
-      item += shift
-      if item < A_LOWERCASE_ORD
-        offset = A_LOWERCASE_ORD - item
-        item = Z_LOWERCASE_ORD + 1 - offset
-      elsif item > Z_LOWERCASE_ORD
-        offset = item - Z_LOWERCASE_ORD
-        item = A_LOWERCASE_ORD - 1 + offset
-      end
+      item = (item + shift - 97) % 26 + 97 
     elsif item >= A_ORD && item <= Z_ORD
-      item += shift
-      if item < A_ORD
-        offset = A_ORD - item
-        item = Z_ORD + 1 - offset
-      elsif item > Z_ORD
-        offset = item - Z_ORD
-        item = A_ORD - 1 + offset
-      end
-    end
-    
+      item = (item + shift - 65) % 26 + 65
+    end 
     item = item.chr
   end.join('')
-  puts result
+  
 end
 
 def get_input
@@ -51,5 +36,27 @@ def get_input
   [str, shift]
 end
 
-caesar_cipher(*get_input())
+puts caesar_cipher('hello', 3)
 
+tests = [
+    { input: ["", 5], expected: "" },
+    { input: ["ABC", 1], expected: "BCD" },
+    { input: ["XYZ", 3], expected: "ABC" },
+    { input: ["abc", 2], expected: "cde" },
+    { input: ["xyz", 2], expected: "zab" },
+    { input: ["Hello, World!", 5], expected: "Mjqqt, Btwqi!" },
+    { input: ["What a string!", 5], expected: "Bmfy f xywnsl!" },
+    { input: ["Shift0", 0], expected: "Shift0" },
+    { input: ["b", -1], expected: "a" },
+    { input: ["a", -1], expected: "z" },
+    { input: ["A", -1], expected: "Z" },
+    { input: ["abc", 26], expected: "abc" },
+    { input: ["ABC", 52], expected: "ABC" },
+    { input: ["Rotate by 13", 13], expected: "Ebgngr ol 13" },
+    { input: ["12345!@#", 7], expected: "12345!@#" }
+]
+
+tests.each { |test| 
+    result = caesar_cipher(test[:input][0], test[:input][1])
+    puts "Original-> #{ test[:input][0] }\nResult->   #{ result }\n#{ result.eql?(test[:expected]) ? "PASSED" : "FAILED" }\n\n"
+}
