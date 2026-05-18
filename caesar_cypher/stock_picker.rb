@@ -29,7 +29,7 @@ def stock_picker(arr)
     end
   end
   [buy_day, sell_day]
-  
+
 end
 
 
@@ -60,8 +60,40 @@ test_cases = [
   { input: [3, 1, 4, 1, 5, 9], expected: [3, 5] },
 ]
 
+
+
+# Another much cleaner implementation stolen from Claude
+# My solution was updating max and min separately so I had to check
+#i - 1 < sell_day so the buy_day doesn't get ahead of sell_day
+# To solve this, you update both buy_day and sell_day at the same time if
+#arr[i] - arr[min_day] yield the most profit so far, then you update sell_day = i
+#and buy_day = min_day.
+# Update min_day = i if arr[i] < arr[min_day]. You are updating min_day = i
+#then in the *next* iteration, if conditions satisfied you update 
+#buy_day = min_day, sell_day = 1
+# This way, buy_day never gets ahead of sell_day
+# Explaination is messy because I don't understand this myself, and I'm trying to
+#make things make sense to myself. 
+
+def stock_picker2(arr)
+  # Entry to the stock market
+  best_buy = 0
+  best_sell = 1
+  min_day = 0
+
+  (1...arr.length).each do |i|
+    if arr[i] - arr[min_day] > arr[best_sell] - arr[best_buy]
+      best_sell = i
+      best_buy = min_day
+    end
+    min_day = i if arr[i] < arr[min_day]
+  end
+
+  [best_buy, best_sell]
+end
+
 test_cases.each_with_index do |item, index|
-  result = stock_picker(item[:input])
+  result = stock_picker2(item[:input])
   if result == item[:expected]
     puts "##{index + 1} Passed"
   else
